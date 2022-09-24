@@ -2,8 +2,8 @@ module Colour (Colour (..), mkHSV, mkSafeHSV, black, white) where
 
 import Data.Maybe (fromMaybe)
 
-data Colour = RGB Double Double Double 
-            | HSV Double Double Double 
+data Colour = RGB !Double !Double !Double 
+            | HSV !Double !Double !Double 
             deriving (Eq)
 
 instance Show Colour where
@@ -26,7 +26,7 @@ intFloor = floor :: RealFrac a => a -> Int
 mkHSV :: Double -> Double -> Maybe Colour
 mkHSV x maxX
         | x <= maxX && maxX <= 0 = Nothing
-        | otherwise              = Just $ HSV (x/maxX * 359) 1 1
+        | otherwise              = Just $ HSV ((x/maxX) * 359) 1 1
 
 mkSafeHSV :: Double -> Double -> Colour
 mkSafeHSV x maxX = fromMaybe white (mkHSV x maxX)

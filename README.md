@@ -3,15 +3,17 @@
 ## Usage
 ```console
 $ fractals --help
-Available fractals: "mandelbrot, julia"
+Available fractals: "mandelbrot, julia, burningShip"
 
 Usage: ./fractals width height zoom offset fractal filepath
-       ./fractals 600 600 4.5 0 mandelbrot fractal.ppm
+       ./fractals 3000 3000 0.15 0 julia fractal.ppm
 ```
+
+![julia fractal](assets/julia-0dot15.png)
 
 ## Roadmap
 - Colour palettes
-- More fractals
+- Better CMD Args
 - Speed up rendering
 - Tests for colour conversions
 

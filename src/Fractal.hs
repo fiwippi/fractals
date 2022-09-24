@@ -1,8 +1,11 @@
-module Fractal (mandelbrot, julia) where
+module Fractal (mandelbrot, julia, burningShip, fractals) where
 
 import Data.Complex
 
 import Colour (Colour, mkSafeHSV, black)
+
+fractals :: [String]
+fractals = ["mandelbrot", "julia", "burningShip"]
 
 maxIter :: Double
 maxIter = 128
@@ -12,6 +15,11 @@ mandelbrot x y = fractal x y (\z -> z**2 + (x:+y))
 
 julia :: Double -> Double -> Colour
 julia x y = fractal x y (\z -> z**2 + (negate 0.835 :+ negate 0.2321))
+
+burningShip :: Double -> Double -> Colour
+burningShip x y = fractal x y frac
+                where frac z = (abs (realPart z) :+ abs (imagPart z))**2 + (x:+y)
+
 
 fractal :: Double -> Double -> (Complex Double -> Complex Double) -> Colour
 fractal x y frac 
@@ -23,7 +31,7 @@ fractal x y frac
 divergence :: Complex Double -> Double -> (Complex Double -> Complex Double) -> Double
 divergence z n frac = go z n
             where go z' n'
-                   | magnitude z' <= 2 && n' < maxIter = go (frac z') (n'+1)
+                   | magnitude z' <= 16 && n' < maxIter = go (frac z') (n'+1)
                    | otherwise                         = if isNaN scaledN then maxIter else scaledN
                     where
                         scaledN = n' - (logBase 2 . logBase 2 . sqrt) (magnitude z')
