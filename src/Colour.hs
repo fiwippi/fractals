@@ -1,6 +1,8 @@
 module Colour (Colour (..), mkHSV, mkSafeHSV, black, white) where
 
+import Data.Word (Word8)
 import Data.Maybe (fromMaybe)
+
 
 data Colour = RGB !Double !Double !Double 
             | HSV !Double !Double !Double 
@@ -10,9 +12,9 @@ instance Show Colour where
     show (HSV h s v) = maybe "Error" show (clr2rgb (HSV h s v))
     show (RGB r g b) = show r' ++ " " ++ show g' ++ " " ++ show b'
                         where
-                            r' = intFloor r
-                            g' = intFloor g
-                            b' = intFloor b
+                            r' = clampRGB r
+                            g' = clampRGB g
+                            b' = clampRGB b
 
 black :: Colour
 black = RGB 0 0 0
@@ -20,8 +22,9 @@ black = RGB 0 0 0
 white :: Colour
 white = RGB 255 255 255
 
-intFloor :: RealFrac a => a -> Int
-intFloor = floor :: RealFrac a => a -> Int
+clampRGB :: Double -> Word8
+clampRGB x = clamp 0 255 (round x)
+            where clamp mn mx = max mn . min mx
 
 mkHSV :: Double -> Double -> Maybe Colour
 mkHSV x maxX
@@ -47,4 +50,4 @@ clr2rgb (HSV h s v) = case i of
                         p                 = v * (1.0 - s)
                         q                 = v * (1.0 - (s * ff))
                         t                 = v * (1.0 - (s * (1 - ff)))
-                        scaleRGB r' g' b' = RGB (r'*254) (g'*254) (b'*254)
+                        scaleRGB r' g' b' = RGB (r'*255) (g'*255) (b'*255)

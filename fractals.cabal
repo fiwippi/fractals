@@ -104,7 +104,7 @@ executable fractals
 
 test-suite fractals-test
     -- Import common warning flags.
-    import:           warnings
+    -- import:           warnings
 
     -- Base language which the package is written in.
     default-language: Haskell2010
@@ -127,4 +127,5 @@ test-suite fractals-test
     -- Test dependencies.
     build-depends:
         base ^>=4.14.3.0,
-        fractals
+        fractals,
+        HUnit

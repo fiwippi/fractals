@@ -15,7 +15,6 @@ Usage: ./fractals width height zoom offset fractal filepath
 - Colour palettes
 - Better CMD Args
 - Speed up rendering
-- Tests for colour conversions
 
 ## License
 `BSD-3-Clause`
