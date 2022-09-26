@@ -1,49 +1,51 @@
 module Main where
 
-import Data.Maybe (fromJust)
+import Options.Applicative
 import Text.Read (readMaybe)
 import Data.List (intercalate)
-import System.Environment (getArgs)
-import System.Exit (exitWith, ExitCode(ExitFailure))
 
-import Colour (Colour)
+import Fractal (Fractal, fractals)
 import Image (drawImage, saveImage)
-import Fractal (mandelbrot, julia, burningShip, fractals)
 
-exit :: IO ()
-exit = do 
-          putStrLn $ "Available fractals: " ++ show (intercalate ", " fractals)
-          putStrLn ""
-          putStrLn "Usage: ./fractals width height zoom offset fractal filepath"
-          putStrLn "       ./fractals 600 600 4.5 0 mandelbrot fractal.ppm"
-          exitWith $ ExitFailure 1
-
-getFractal :: String -> (Double -> Double -> Colour)
-getFractal f = case f of
-                   "mandelbrot"  -> mandelbrot
-                   "julia"       -> julia
-                   "burningShip" -> burningShip
-                   _             -> error "invalid fractal"
-
-validArgs :: Maybe Int -> Maybe Int -> Maybe Double -> Maybe Double -> String -> String -> Bool
-validArgs w h z off frac fp
-                        | null fp                 = False
-                        | frac `notElem` fractals = False
-                        | Nothing `elem` [w, h]   = False
-                        | Nothing `elem` [z, off] = False
-                        | otherwise               = True
+ensureMin :: (Num a, Ord a, Read a) => a -> String -> Maybe a
+ensureMin mn x = case readMaybe x of
+                    Nothing -> Nothing
+                    Just n  -> if n < mn then Nothing else Just n
 
 main :: IO ()
 main = do
-    args <- getArgs
-    case args of
-        [w, h, z, off, frac, fp] -> if not $ validArgs w' h' z' off' frac fp
-                                        then exit 
-                                    else saveImage (drawImage (fj w') (fj h') (getFractal frac) (fj z') (fj off')) fp 
-                                    where w'   = readMaybe w :: Maybe Int
-                                          h'   = readMaybe h :: Maybe Int
-                                          z'   = readMaybe z :: Maybe Double
-                                          off' = readMaybe off :: Maybe Double
-                                          fj   = fromJust
-        _failure                 -> exit
+        args <- execParser $ info (cmdArgs <**> helper) fullDesc
+        let w  = width args
+        let h  = height args
+        let f  = fractal args
+        let z  = zoom args
+        let o  = offset args
+        let fp = filepath args
+        saveImage (drawImage w h f z o) fp
 
+data Args = Args
+  { width    :: !Int
+  , height   :: !Int
+  , zoom     :: !Double
+  , offset   :: !Double
+  , fractal  :: !Fractal 
+  , filepath :: !String }
+
+cmdArgs :: Parser Args
+cmdArgs = Args
+      <$> option (maybeReader $ ensureMin 1) 
+           ( short 'w' <> metavar "WIDTH" <> help "Width of the output image" <>
+             showDefault <> value 500 )
+      <*> option (maybeReader $ ensureMin 1) 
+           ( short 'h' <> metavar "HEIGHT" <> help "Height of the output image" <> 
+             showDefault <> value 500 ) 
+      <*> option (maybeReader $ ensureMin 0) 
+           ( short 'z' <> metavar "ZOOM" <> help "Strength of zoom-out from the image" <> 
+             showDefault <> value 1 )
+      <*> option auto
+           ( short 'o' <> metavar "OFFSET" <> help "Offset of the fractal" <> 
+             showDefault <> value 0 )
+      <*> option auto
+          ( short 'f' <> metavar "FRACTAL" <> 
+            help ("Name of the fractal to draw: \"" ++ intercalate ", " (map show fractals) ++ "\"") )
+      <*> argument str (metavar "FILE") 

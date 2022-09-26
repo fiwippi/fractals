@@ -1,6 +1,7 @@
 module Image (Image, drawImage, saveImage) where
 
 import Colour (Colour)
+import Drawing (Drawer(draw))
 
 data Image = Image {
       width  :: !Int
@@ -12,10 +13,10 @@ data Image = Image {
 (//) a b = fromIntegral a / fromIntegral b
 infixl 7 //
 
-drawImage :: Int -> Int -> (Double -> Double -> Colour) -> Double -> Double -> Image
-drawImage w h draw zoom offset = Image{width=w, height=h, pixels=px}
+drawImage :: (Drawer a) => Int -> Int -> a -> Double -> Double -> Image
+drawImage w h drawer zoom offset = Image{width=w, height=h, pixels=px}
                 where
-                    px      = [[draw (adj x w) (adj y h) | x <- [1..w]] | y <- [1..h]]
+                    px      = [[draw drawer (adj x w) (adj y h) | x <- [1..w]] | y <- [1..h]]
                     adj a b = ((a // b) * zoom * 2) + (offset - zoom)
 
 serialise :: [[Colour]] -> String

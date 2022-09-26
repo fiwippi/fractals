@@ -3,18 +3,24 @@
 ## Usage
 ```console
 $ fractals --help
-Available fractals: "mandelbrot, julia, burningShip"
+Usage: fractals [-w WIDTH] [-h HEIGHT] [-z ZOOM] [-o OFFSET] -f FRACTAL FILE
 
-Usage: ./fractals width height zoom offset fractal filepath
-       ./fractals 3000 3000 0.15 0 julia fractal.ppm
+Available options:
+  -w WIDTH                 Width of the output image (default: 500)
+  -h HEIGHT                Height of the output image (default: 500)
+  -z ZOOM                  Strength of zoom-out from the image (default: 1.0)
+  -o OFFSET                Offset of the fractal (default: 0.0)
+  -f FRACTAL               Name of the fractal to draw: "Mandelbrot, Julia,
+                           BurningShip"
+  -h,--help                Show this help text
+       
+$ ./fractals -w 3000 -h 3000 -z 0.15 -f Julia f.ppm
 ```
 
 ![julia fractal](assets/julia-0dot15.png)
 
 ## Roadmap
 - Colour palettes
-- Better CMD Args
-- Speed up rendering
 
 ## License
 `BSD-3-Clause`

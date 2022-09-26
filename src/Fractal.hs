@@ -1,25 +1,23 @@
-module Fractal (mandelbrot, julia, burningShip, fractals) where
+module Fractal (Fractal, fractals) where
 
 import Data.Complex
 
+import Drawing (Drawer(draw))
 import Colour (Colour, mkSafeHSV, black)
 
-fractals :: [String]
-fractals = ["mandelbrot", "julia", "burningShip"]
+data Fractal = Mandelbrot | Julia | BurningShip
+                deriving (Read, Show, Enum, Bounded)
+
+fractals :: [Fractal]
+fractals = [(minBound :: Fractal) ..]
+
+instance Drawer Fractal where
+        draw Mandelbrot x y  = fractal x y (\z -> z**2 + (x:+y))
+        draw Julia x y       = fractal x y (\z -> z**2 + (negate 0.835 :+ negate 0.2321))
+        draw BurningShip x y = fractal x y (\z -> (abs (realPart z) :+ abs (imagPart z))**2 + (x:+y))
 
 maxIter :: Double
 maxIter = 128
-
-mandelbrot :: Double -> Double -> Colour
-mandelbrot x y = fractal x y (\z -> z**2 + (x:+y))
-
-julia :: Double -> Double -> Colour
-julia x y = fractal x y (\z -> z**2 + (negate 0.835 :+ negate 0.2321))
-
-burningShip :: Double -> Double -> Colour
-burningShip x y = fractal x y frac
-                where frac z = (abs (realPart z) :+ abs (imagPart z))**2 + (x:+y)
-
 
 fractal :: Double -> Double -> (Complex Double -> Complex Double) -> Colour
 fractal x y frac 
