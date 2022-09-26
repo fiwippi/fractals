@@ -19,8 +19,5 @@ $ ./fractals -w 3000 -h 3000 -z 0.15 -f Julia f.ppm
 
 ![julia fractal](assets/julia-0dot15.png)
 
-## Roadmap
-- Colour palettes
-
 ## License
 `BSD-3-Clause`
